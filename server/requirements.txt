@@ -1,0 +1,12 @@
+ee
+pandas
+sqlalchemy~=2.0.41
+requests
+numpy
+climate_indices
+fastapi
+uvicorn
+python-dotenv
+psycopg2-binary
+geoalchemy2
+shapely

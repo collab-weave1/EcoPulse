@@ -29,8 +29,6 @@ EcoPulse is a real-time environmental risk monitoring platform. It enables regio
 
 **Live URL:** [https://ecopulse-risk-monitoring.netlify.app](https://ecopulse-risk-monitoring.netlify.app)
 
-Backend API: [https://ecopulse-23ge.onrender.com](https://ecopulse-23ge.onrender.com)
-
 ---
 
 ## Features

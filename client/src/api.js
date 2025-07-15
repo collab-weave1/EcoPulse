@@ -8,15 +8,15 @@ export async function fetchRisk(regionId) {
 
   const url = `${API_URL}${path}`
 
-  console.log('📡 fetchRisk URL =', url);
+  console.log('fetchRisk URL =', url);
 
   const res = await fetch(url);
   console.log('API_URL:', import.meta.env.VITE_API_URL);
-  console.log('📡 fetchRisk raw response =', res);
+  console.log('fetchRisk raw response =', res);
 
   if (!res.ok) {
     const text = await res.text();
-    console.error('❌ fetchRisk failed:', res.status, text);
+    console.error('fetchRisk failed:', res.status, text);
     throw new Error(`Failed to fetch risk data: ${res.status}`);
   }
 
@@ -28,7 +28,7 @@ export async function subscribe(regionId, email) {
   const path = `/alerts/${regionId}`;
   const url = `${API_URL}${path}`;
 
-  console.log('📡 subscribe URL =', url, 'body =', { email });
+  console.log('subscribe URL =', url, 'body =', { email });
 
   const res = await fetch(url, {
     method: 'POST',
@@ -37,11 +37,11 @@ export async function subscribe(regionId, email) {
   });
 
   console.log('API_URL:', import.meta.env.VITE_API_URL);
-  console.log('📡 subscribe raw response =', res);
+  console.log('subscribe raw response =', res);
 
   if (!res.ok) {
     const text = await res.text();
-    console.error('❌ subscribe failed:', res.status, text);
+    console.error('subscribe failed:', res.status, text);
     throw new Error(`Failed to subscribe: ${res.status}`);
   }
 

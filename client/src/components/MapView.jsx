@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
+import { AlertTriangle, MapPin, Droplets, Flame, Activity } from 'lucide-react';
 
 mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
 
@@ -35,7 +36,7 @@ export default function MapView({ regionId = 1 }) {
       container: 'map',
       style: 'mapbox://styles/mapbox/light-v10',
       center: [77.55, 12.95],
-      zoom: 6,
+      zoom: 9,
     });
 
     map.on('load', async () => {
@@ -230,46 +231,97 @@ export default function MapView({ regionId = 1 }) {
     return () => map.remove();
   }, [regionId]);
 
+  const getStatusIcon = (status) => {
+    switch (status) {
+      case 'success': return <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>;
+      case 'error': return <div className="w-2 h-2 bg-red-500 rounded-full"></div>;
+      case 'loading': return <div className="w-2 h-2 bg-yellow-500 rounded-full animate-spin"></div>;
+      default: return <div className="w-2 h-2 bg-gray-300 rounded-full"></div>;
+    }
+  };
+
   return (
-    <div className="bg-white p-4 rounded shadow">
-      <h2 className="font-semibold mb-1">🗺️ Regional Monitoring Map</h2>
-      
+    <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100">
       {(!regionId || regionId === 'undefined') ? (
-        <div className="p-4 bg-red-100 border border-red-300 rounded">
-          <p className="text-red-700 font-medium">⚠️ Error: No region selected</p>
-          <p className="text-red-600 text-sm">
-            The MapView component requires a valid regionId prop. 
-            Current value: {JSON.stringify(regionId)}
-          </p>
+        <div className="p-6">
+          <div className="flex items-center gap-3 mb-4">
+            <AlertTriangle className="w-6 h-6 text-red-500" />
+            <h3 className="text-lg font-semibold text-red-700">Configuration Error</h3>
+          </div>
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+            <p className="text-red-700 font-medium mb-2">No region selected</p>
+            <p className="text-red-600 text-sm">
+              The MapView component requires a valid regionId prop. 
+              Current value: {JSON.stringify(regionId)}
+            </p>
+          </div>
         </div>
       ) : (
         <>
-          <p className="text-sm text-gray-600 mb-2">
-            Region {regionId} <br/>
-            • <strong>Water</strong>: Blue circles show monitoring stations.<br/>
-            • <strong>Risk Zones</strong>: Color fill from green to red indicates increasing EcoRisk.<br/>
-            • <strong>Drought</strong>: Semi-transparent red overlays mark drought severity areas.<br/>
-            • <strong>Calamity</strong>: Fire icons mark recent critical events.
-          </p>
-          
-          <div className="mb-4 p-2 bg-gray-100 rounded text-xs">
-            <strong>Layer Status:</strong>
-            {Object.entries(loadStatus).map(([layer, info]) => (
-              <div key={layer} className="flex justify-between">
-                <span>{layer}:</span>
-                <span className={
-                  info.status === 'success' ? 'text-green-600' :
-                  info.status === 'error' ? 'text-red-600' :
-                  info.status === 'skipped' ? 'text-gray-500' :
-                  'text-yellow-600'
-                }>
-                  {info.status} {info.error && `(${info.error})`}
-                </span>
+          <div className="p-6 border-b border-gray-100">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-800">Region {regionId} Environmental Data</h3>
+              <div className="flex items-center gap-2">
+                <Activity className="w-4 h-4 text-green-600" />
+                <span className="text-sm text-gray-600">Live Data</span>
               </div>
-            ))}
+            </div>
+            
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+              <div className="flex items-center gap-2 p-2 bg-blue-50 rounded-lg">
+                <Droplets className="w-4 h-4 text-blue-600" />
+                <span className="text-sm font-medium text-blue-700">Water Stations</span>
+              </div>
+              <div className="flex items-center gap-2 p-2 bg-green-50 rounded-lg">
+                <MapPin className="w-4 h-4 text-green-600" />
+                <span className="text-sm font-medium text-green-700">Risk Zones</span>
+              </div>
+              <div className="flex items-center gap-2 p-2 bg-red-50 rounded-lg">
+                <div className="w-4 h-4 bg-red-500 rounded opacity-50"></div>
+                <span className="text-sm font-medium text-red-700">Drought Areas</span>
+              </div>
+              <div className="flex items-center gap-2 p-2 bg-orange-50 rounded-lg">
+                <Flame className="w-4 h-4 text-orange-600" />
+                <span className="text-sm font-medium text-orange-700">Critical Events</span>
+              </div>
+            </div>
+            
+            <div className="bg-gray-50 rounded-lg p-3">
+              <div className="flex items-center gap-2 mb-2">
+                <Activity className="w-4 h-4 text-gray-600" />
+                <span className="text-sm font-medium text-gray-700">Data Layer Status</span>
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs">
+                {Object.entries(loadStatus).map(([layer, info]) => (
+                  <div key={layer} className="flex items-center gap-2 p-2 bg-white rounded">
+                    {getStatusIcon(info.status)}
+                    <span className="capitalize font-medium text-gray-600">{layer}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
           
-          <div id="map" className="w-full h-[600px] rounded" aria-label="Regional environmental risk map" role="img" />
+          <div className="relative">
+            <div 
+              id="map" 
+              className="w-full h-[500px]" 
+              aria-label="Regional environmental risk map" 
+              role="img" 
+            />
+            
+            <div className="absolute bottom-4 left-4 bg-white/95 backdrop-blur-sm rounded-lg p-3 shadow-lg border border-gray-200">
+              <div className="text-xs font-semibold text-gray-700 mb-2">EcoRisk Scale</div>
+              <div className="flex items-center gap-1">
+                <div className="w-4 h-4 bg-green-400 rounded-sm"></div>
+                <span className="text-xs text-gray-600">Low</span>
+                <div className="w-4 h-4 bg-yellow-400 rounded-sm ml-2"></div>
+                <span className="text-xs text-gray-600">Med</span>
+                <div className="w-4 h-4 bg-red-400 rounded-sm ml-2"></div>
+                <span className="text-xs text-gray-600">High</span>
+              </div>
+            </div>
+          </div>
         </>
       )}
     </div>

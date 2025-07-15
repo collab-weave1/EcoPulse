@@ -113,13 +113,15 @@ def get_db():
 
 
 app = FastAPI()
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[os.getenv('FRONTEND_URL', 'http://localhost:5173')],
+    allow_origins=["https://ecopulse-risk-monitoring.netlify.app"],
     allow_credentials=True,
-    allow_methods=['*'],
-    allow_headers=['*'],
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
+
 
 
 @app.on_event('startup')

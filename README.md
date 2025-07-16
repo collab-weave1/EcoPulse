@@ -74,8 +74,11 @@ If you're running the DB locally, enable PostGIS and seed region data:
 
 ```sql
 CREATE EXTENSION postgis;
+```
+```sql
 SELECT postgis_full_version();
-
+```
+```sql
 INSERT INTO regions (id, name, geom)
 VALUES (
   1,
